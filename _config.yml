@@ -1,5 +1,7 @@
 # Site settings
 title: Improving computational performance with algorithm engineering
+author: Kirill Müller
+username: krlmlr
 email: kirill.mueller@ivt.baug.ethz.ch
 description: "This website is an entry point for packages and documentation for my submission to useR! 2015."
 baseurl: ""
