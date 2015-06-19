@@ -51,9 +51,10 @@ ggplot_interval <-
     theme_classic(),
     theme(text = element_blank(), axis.line = element_blank(),
           axis.ticks = element_blank()),
-    scale_fill_identity(),
     scale_color_identity(),
-    coord_flip()
+    coord_flip(),
+    theme(plot.margin = grid::unit(c(0,0,0,0), "line")),
+    NULL
   )
 ```
 
@@ -113,6 +114,7 @@ ggplot(d, aes(x=0, y=y, group=0)) +
   ggplot_interval +
   geom_bar(aes(fill=ifelse(r, "green", NA)), position="stack", stat="identity", color=NA) +
   geom_bar(position="stack", stat="identity", fill=NA, color="black") +
+  scale_fill_identity() +
   geom_point(x=0, y=yr, color = "red")
 ```
 
@@ -127,17 +129,20 @@ Common framework:
 - **If sampling without replacement, remove sub-interval**
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
-ggplot(d, aes(x=0, y=y, group=0)) +
+d$f <- NA_integer_
+d$f[!d$r] <- seq_len(sum(!d$r))
+ggplot(d, aes(x=0, y=y, group=0, fill=f)) +
   ggplot_interval +
-  geom_bar(aes(fill=ifelse(r, "gray", NA)), position="stack", stat="identity", color=NA) +
-  geom_bar(position="stack", stat="identity", fill=NA, color="black")
+  geom_bar(position="stack", stat="identity", color="black") +
+  scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
 ```
 
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
-ggplot(d[!d$r,], aes(x=0, y=y, group=0)) +
+ggplot(d[!d$r,], aes(x=0, y=y, group=0, fill=f)) +
   ggplot_interval +
-  geom_bar(position="stack", stat="identity", fill=NA, color="black")
+  geom_bar(position="stack", stat="identity", color="black") +
+  scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
 ```
 
 
