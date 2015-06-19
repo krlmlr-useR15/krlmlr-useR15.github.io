@@ -1,0 +1,40 @@
+---
+title: "Improving computational performance with algorithm engineering"
+author: "Kirill Müller"
+date: "July 1, 2015"
+output: ioslides_presentation
+---
+
+## Algorithm engineering
+
+> Design, analysis, implementation, optimization, profiling and experimental evaluation of computer algorithms. (*Wikipedia*)
+
+Here: Substitute existing implementation by an algorithm
+with a lower computational complexity.
+
+### Examples
+
+1. Weighted random sampling without replacement
+2. Similarity-based statistical matching
+3. Survey calibration
+4. Package management
+
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Code and Output
+
+```{r}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
