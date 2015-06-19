@@ -17,12 +17,17 @@ set.seed(20150619L)
 Here: Substitute existing implementation by an algorithm
 with a lower computational complexity.
 
-**Examples**
 
-1. Weighted random sampling without replacement
-2. Similarity-based statistical matching
-3. Survey calibration
-4. Package management
+## Overview
+
+1. Fast weighted random sampling without replacement
+    - Truncate-replicate-sample in spatial microsimulation
+2. Convert Gower distance to Manhattan metric
+    - Similarity-based statistical matching
+3. Avoid path enumeration
+    - Management of package dependencies
+4. Carefully read implementation notes
+    - Survey calibration
 
 
 ## Random sampling
