@@ -70,8 +70,9 @@ Common framework:
 - If sampling without replacement, remove sub-interval
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
-prob <- prop.table(runif(10))
-d <- data.frame(y=prob)
+N <- 10
+prob <- prop.table(runif(N))
+d <- data.frame(y=prob, yy=1/N)
 ggplot(d, aes(x=0, y=y, group=0)) +
   ggplot_interval +
   geom_bar(position="stack", stat="identity", fill=NA, color="black")
@@ -143,6 +144,26 @@ ggplot(d[!d$r,], aes(x=0, y=y, group=0, fill=f)) +
   ggplot_interval +
   geom_bar(position="stack", stat="identity", color="black") +
   scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
+```
+
+
+## Random sampling with replacement
+
+Simple case:
+
+- No need to remove sub-interval
+- Uniform probabilities: No need for explicit interval
+- Nonuniform probabilities: Binary search?
+    - Better: Walker's alias method (used in R for large number of not
+  entirely unlikely elements)
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(d, aes(x=0, y=y, group=0)) +
+  ggplot_interval +
+  geom_bar(aes(fill=ifelse(r, "green", NA)), position="stack", stat="identity", color=NA) +
+  geom_bar(position="stack", stat="identity", fill=NA, color="black") +
+  scale_fill_identity() +
+  geom_point(x=0, y=yr, color = "red")
 ```
 
 
