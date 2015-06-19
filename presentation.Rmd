@@ -50,7 +50,7 @@ Common framework:
 - If sampling without replacement, remove sub-interval
 
 ```{r echo=F}
-interval_fig_height <- 0.7
+interval_fig_height <- 0.6
 ggplot_interval_base <-
   list(
     theme_classic(),
@@ -67,6 +67,16 @@ ggplot_interval <-
       coord_flip(),
       NULL
     )
+  )
+ggplot_rainbow <-
+  list(
+    scale_fill_gradientn(colours = rainbow(23), guide = FALSE),
+    NULL
+  )
+ggplot_interval_rainbow <-
+  c(
+    ggplot_interval,
+    ggplot_rainbow
   )
 ```
 
@@ -134,8 +144,6 @@ ggplot(d, aes(x=0, y=y, group=0)) +
 
 ## Random sampling with replacement
 
-Simple case:
-
 - No need to remove sub-interval
 - Uniform probabilities: No need for explicit interval
 
@@ -150,17 +158,24 @@ ggplot(d, aes(x=0, y=yy, group=0)) +
     - Better: Walker's alias method (used in R for large number of not
   entirely unlikely elements)
 
+
 ```{r echo=FALSE, fig.height=interval_fig_height}
 d$f <- seq_along(d$r)
-ggplot(d, aes(x=f, y=y, group=f)) +
+ggplot(d, aes(x=0, y=y, group=0, fill=f)) +
+  ggplot_interval_rainbow +
+  geom_bar(position="stack", stat="identity", color="black")
+```
+
+```{r echo=FALSE, fig.height=interval_fig_height*2}
+ggplot(d, aes(x=-order(y), y=y, group=f, fill=f)) +
   ggplot_interval_base +
-  geom_bar(aes(y=yy), position="stack", stat="identity", fill=NA, color="black", linetype=3) +
-  geom_bar(stat="identity", fill=NA, color="black") +
-  scale_fill_identity()
+  ggplot_rainbow +
+  geom_bar(stat="identity", color="black") +
+  geom_bar(aes(y=yy), position="stack", stat="identity", fill=NA, color="black", linetype=3)
 ```
 
 
-## Implementation of random sampling
+## Random sampling without replacement
 
 Common framework:
 
@@ -171,17 +186,15 @@ Common framework:
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
 ggplot(d, aes(x=0, y=y, group=0, fill=ifelse(r, NA, f))) +
-  ggplot_interval +
-  geom_bar(position="stack", stat="identity", color="black") +
-  scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
+  ggplot_interval_rainbow +
+  geom_bar(position="stack", stat="identity", color="black")
 ```
 
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
 ggplot(d[!d$r,], aes(x=0, y=y, group=0, fill=f)) +
-  ggplot_interval +
-  geom_bar(position="stack", stat="identity", color="black") +
-  scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
+  ggplot_interval_rainbow +
+  geom_bar(position="stack", stat="identity", color="black")
 ```
 
 
