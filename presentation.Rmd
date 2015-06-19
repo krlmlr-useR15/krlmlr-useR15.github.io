@@ -132,32 +132,6 @@ ggplot(d, aes(x=0, y=y, group=0)) +
 ```
 
 
-## Implementation of random sampling
-
-Common framework:
-
-- Subdivide an interval according to probabilities
-- Uniformly sample point from interval
-- Choose sub-interval covered by point
-- **If sampling without replacement, remove sub-interval**
-
-```{r echo=FALSE, fig.height=interval_fig_height}
-d$f <- seq_along(d$r)
-ggplot(d, aes(x=0, y=y, group=0, fill=ifelse(r, NA, f))) +
-  ggplot_interval +
-  geom_bar(position="stack", stat="identity", color="black") +
-  scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
-```
-
-
-```{r echo=FALSE, fig.height=interval_fig_height}
-ggplot(d[!d$r,], aes(x=0, y=y, group=0, fill=f)) +
-  ggplot_interval +
-  geom_bar(position="stack", stat="identity", color="black") +
-  scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
-```
-
-
 ## Random sampling with replacement
 
 Simple case:
@@ -177,11 +151,37 @@ ggplot(d, aes(x=0, y=yy, group=0)) +
   entirely unlikely elements)
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
+d$f <- seq_along(d$r)
 ggplot(d, aes(x=f, y=y, group=f)) +
   ggplot_interval_base +
   geom_bar(aes(y=yy), position="stack", stat="identity", fill=NA, color="black", linetype=3) +
   geom_bar(stat="identity", fill=NA, color="black") +
   scale_fill_identity()
+```
+
+
+## Implementation of random sampling
+
+Common framework:
+
+- Subdivide an interval according to probabilities
+- Uniformly sample point from interval
+- Choose sub-interval covered by point
+- **If sampling without replacement, remove sub-interval**
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(d, aes(x=0, y=y, group=0, fill=ifelse(r, NA, f))) +
+  ggplot_interval +
+  geom_bar(position="stack", stat="identity", color="black") +
+  scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
+```
+
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(d[!d$r,], aes(x=0, y=y, group=0, fill=f)) +
+  ggplot_interval +
+  geom_bar(position="stack", stat="identity", color="black") +
+  scale_fill_gradientn(colours = rainbow(23), guide = FALSE)
 ```
 
 
