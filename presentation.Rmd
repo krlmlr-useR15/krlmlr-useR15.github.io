@@ -20,14 +20,21 @@ with a lower computational complexity.
 
 ## Overview
 
-1. Fast weighted random sampling without replacement
-    - Truncate-replicate-sample in spatial microsimulation
-2. Convert Gower distance to Manhattan metric
-    - Similarity-based statistical matching
-3. Avoid path enumeration
-    - Management of package dependencies
-4. Carefully read implementation notes
-    - Survey calibration
+1. Weighted random sampling without replacement
+2. Similarity-based statistical matching
+3. Management of package dependencies
+4. Survey calibration
+
+
+## Applications
+
+Generation of input for agent-based microsimulation models
+
+- Input: register data, demographic and mobility surveys
+- *Survey calibration*: Compute weights
+- *Sampling without replacement*: Transform to integer weights
+- *Statistical matching*: Combine datasets
+- (*Package dependencies*: Results from raw data)
 
 
 ## Random sampling
