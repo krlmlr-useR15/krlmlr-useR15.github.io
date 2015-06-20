@@ -203,24 +203,3 @@ ggplot(d[!d$r,], aes(x=0, y=y, group=0, fill=f)) +
   ggplot_interval_rainbow +
   geom_bar(position="stack", stat="identity", color="black")
 ```
-
-
-
-## Slide with Bullets
-
-- Bullet 1
-- Bullet 2
-- Bullet 3
-
-## Slide with R Code and Output
-
-```{r}
-summary(cars)
-```
-
-## Slide with Plot
-
-```{r, echo=FALSE}
-plot(cars)
-```
-
