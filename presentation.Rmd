@@ -27,15 +27,13 @@ Generation of input for agent-based microsimulation models
 - *Survey calibration*: Compute weights
 - *Sampling without replacement*: Transform to integer weights
 - *Statistical matching*: Combine datasets
-- (*Package dependencies*: Results from raw data)
 
 
 ## Overview
 
 1. Weighted random sampling without replacement
 2. Similarity-based statistical matching
-3. Management of package dependencies
-4. Survey calibration
+3. Survey calibration
 
 
 ## Random sampling
