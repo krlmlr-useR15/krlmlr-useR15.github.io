@@ -163,8 +163,8 @@ ggplot(d, aes(x=0, y=yy, group=0)) +
 ```
 
 - Nonuniform probabilities: Binary search?
-    - Better: Walker's alias method (used in R for large number of not
-  entirely unlikely elements)
+    - Better: Walker's alias method
+    - Used in R if many elements are not entirely unlikely
 
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
