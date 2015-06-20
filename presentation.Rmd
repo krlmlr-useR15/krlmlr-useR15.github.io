@@ -294,3 +294,20 @@ Nonuniform probabilities:
 
 
 
+## Survey calibration
+
+
+
+## Straightforward implementation
+
+
+
+## Suggested implementation
+
+
+
+## Performance comparison
+
+
+
+## Summary
