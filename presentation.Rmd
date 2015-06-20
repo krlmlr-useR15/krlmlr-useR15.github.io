@@ -237,3 +237,62 @@ Nonuniform probabilities:
 - R uses trivial algorithm with update in $O(n)$
 - Heap-like data structure with update in $O(\log n)$ (Wong and Easton, 1980)
 - Alternative approaches
+
+
+## Alternative approaches
+
+- Rejection sampling
+- Reservoir sampling
+
+## Run time different distributions
+
+
+
+## Run time for different rates
+
+
+
+## Linear model?
+
+
+
+## Correctness
+
+
+
+## Summary
+
+
+
+## Statistical matching
+
+
+
+## Gower distance
+
+
+
+## Current implementation
+
+
+
+## Nearest-neighbor algorithms
+
+
+
+## From Gower to Manhattan distance
+
+
+
+## Run time improvements
+
+
+
+## Correctness
+
+
+
+## Summary
+
+
+
