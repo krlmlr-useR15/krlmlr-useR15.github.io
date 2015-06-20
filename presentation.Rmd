@@ -8,6 +8,7 @@ output: ioslides_presentation
 ```{r echo=FALSE}
 library(ggplot2)
 set.seed(20150619L)
+knitr::opts_chunk$set(cache = TRUE)
 ```
 
 ## Algorithm engineering
