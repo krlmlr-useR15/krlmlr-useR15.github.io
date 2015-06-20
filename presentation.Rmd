@@ -53,9 +53,10 @@ sample.int
 Common framework:
 
 - Subdivide an interval according to probabilities
-- Uniformly sample point from interval
-- Choose sub-interval covered by point
-- If sampling without replacement, remove sub-interval
+- Repeat
+    - Uniformly sample point from interval
+    - Choose sub-interval covered by point
+    - If sampling without replacement, remove sub-interval
 
 ```{r echo=F}
 interval_fig_height <- 0.6
@@ -95,9 +96,10 @@ ggplot_interval_rainbow <-
 Common framework:
 
 - **Subdivide an interval according to probabilities**
-- Uniformly sample point from interval
-- Choose sub-interval covered by point
-- If sampling without replacement, remove sub-interval
+- Repeat
+    - Uniformly sample point from interval
+    - Choose sub-interval covered by point
+    - If sampling without replacement, remove sub-interval
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
 N <- 10
@@ -116,9 +118,10 @@ ggplot(d, aes(x=0, y=y, group=0)) +
 Common framework:
 
 - Subdivide an interval according to probabilities
-- **Uniformly sample point from interval**
-- Choose sub-interval covered by point
-- If sampling without replacement, remove sub-interval
+- Repeat
+    - **Uniformly sample point from interval**
+    - Choose sub-interval covered by point
+    - If sampling without replacement, remove sub-interval
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
 yr <- runif(1)
@@ -136,9 +139,10 @@ ggplot(d, aes(x=0, y=y, group=0)) +
 Common framework:
 
 - Subdivide an interval according to probabilities
-- Uniformly sample point from interval
-- **Choose sub-interval covered by point**
-- If sampling without replacement, remove sub-interval
+- Repeat
+    - Uniformly sample point from interval
+    - **Choose sub-interval covered by point**
+    - If sampling without replacement, remove sub-interval
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
 ggplot(d, aes(x=0, y=y, group=0)) +
@@ -183,14 +187,15 @@ ggplot(d, aes(x=-order(y), y=y, group=f, fill=f)) +
 ```
 
 
-## Random sampling without replacement
+## Implementation of random sampling
 
 Common framework:
 
 - Subdivide an interval according to probabilities
-- Uniformly sample point from interval
-- Choose sub-interval covered by point
-- **If sampling without replacement, remove sub-interval**
+- Repeat
+    - Uniformly sample point from interval
+    - Choose sub-interval covered by point
+    - **If sampling without replacement, remove sub-interval**
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
 ggplot(d, aes(x=0, y=y, group=0, fill=ifelse(r, NA, f))) +
