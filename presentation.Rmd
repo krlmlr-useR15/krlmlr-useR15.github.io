@@ -209,3 +209,31 @@ ggplot(d[!d$r,], aes(x=0, y=y, group=0, fill=f)) +
   ggplot_interval_rainbow +
   geom_bar(position="stack", stat="identity", color="black")
 ```
+
+
+## Random sampling w/o replacement
+
+Challenge: Remove sub-interval after each draw
+
+Uniform probabilities: Rearrange array in $O(1)$
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(d, aes(x=0, y=yy, group=0, fill=ifelse(r, NA, f))) +
+  ggplot_interval +
+  ggplot_rainbow +
+  geom_bar(position="stack", stat="identity", color="black")
+```
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(head(d, -1), aes(x=0, y=yy, group=0, fill=ifelse(r, tail(d$f, 1), f))) +
+  ggplot_interval +
+  ggplot_rainbow +
+  scale_y_continuous(limits = c(0,1)) +
+  geom_bar(position="stack", stat="identity", color="black")
+```
+
+Nonuniform probabilities:
+
+- R uses trivial algorithm with update in $O(n)$
+- Heap-like data structure with update in $O(\log n)$ (Wong and Easton, 1980)
+- Alternative approaches
