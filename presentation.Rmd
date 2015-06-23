@@ -39,9 +39,12 @@ Generation of input for agent-based microsimulation models
 ## Random sampling
 
 ```{r}
-sample.int
+dput(sample.int)
 ```
 
+- `n`: Number of items to choose from
+- `size`: Number of items to choose
+    - optimize for `size` ≫ `1`
 - `replace`: With or without replacement
 - `prob`: Uniform or non-uniform probabilities
 
@@ -234,7 +237,7 @@ Nonuniform probabilities:
 
 - R uses trivial algorithm with update in $O(n)$
 - Heap-like data structure with update in $O(\log n)$ (Wong and Easton, 1980)
-- Alternative approaches
+- **Alternative approaches**
 
 
 ## Alternative approaches
