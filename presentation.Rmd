@@ -247,7 +247,7 @@ Nonuniform probabilities:
 - Reservoir sampling (Efraimidis and Spirakis, 2006)
 
 ```{r}
-dput(wrswoR::sample.int.rank)
+dput(wrswoR::sample_int_rank)
 ```
 
 
