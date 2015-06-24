@@ -243,7 +243,13 @@ Nonuniform probabilities:
 ## Alternative approaches
 
 - Rejection sampling
-- Reservoir sampling
+    - Sample with replacement, throw away duplicates
+- Reservoir sampling (Efraimidis and Spirakis, 2006)
+
+```{r}
+dput(wrswoR::sample.int.rank)
+```
+
 
 ## Run time different distributions
 
