@@ -236,7 +236,7 @@ ggplot(head(d, -1), aes(x=0, y=yy, group=0, fill=ifelse(r, tail(d$f, 1), f))) +
 Nonuniform probabilities:
 
 - R uses trivial algorithm with update in $O(n)$
-- Heap-like data structure with update in $O(\log n)$ (Wong and Easton, 1980)
+- Heap-like data structure (Partial Sum Trees) with update in $O(\log n)$ (Wong and Easton, 1980)
 - **Alternative approaches**
 
 
