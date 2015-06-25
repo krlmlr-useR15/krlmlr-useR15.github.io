@@ -289,6 +289,22 @@ $$\log X_i = \log U_i \cdot \frac{1}{w_i} = \frac{-\text{Exp}_i(1)}{w_i} ⩮ \fr
 
 ## Statistical matching
 
+- Input: two joint distributions $(X, Y)$ and $(X, Z)$
+- Output: a joint distribution $(X, Y, Z)$
+
+**Hot deck**: Combine observations from $(X, Y)$ 
+with "matching" observations from $(X, Z)$
+to create a realization of $(X, Y, Z)$.
+
+- Precondition: $Y$ and $Z$ independent given $X$
+
+- Variants:
+    - Exact
+    - **Approximate**
+
+
+
+
 
 
 ## Gower distance
