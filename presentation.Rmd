@@ -6,9 +6,14 @@ output: ioslides_presentation
 ---
 
 ```{r echo=FALSE}
+library(magrittr)
 library(ggplot2)
 set.seed(20150619L)
 knitr::opts_chunk$set(cache = TRUE, comment = "")
+
+knit_print.dissimilarity <- function(x, options) {
+  print(structure(x, class = "dist"))
+}
 ```
 
 ## Algorithm engineering
@@ -307,18 +312,37 @@ $$(x, y) ⋈ (x', z) = (x, y, z)$$
 
 ## Gower distance
 
-Distance metric for interval-scaled, ordered and nominal variables
+Distance metric for multivariate distributions (Gower, 1971)
+
+Weighted sum of distances for each variable, in $[0, 1]$
+
+- Interval-scaled: Relative to interval width
+- Ordinal variables: Relative to number of levels
+- Nominal variables: 0 if equal, 1 otherwise
 
 
-## Current implementation
+## Gower distance: Example
 
+```{r data_def, echo=F}
+data <- data.frame(int=c(1, 3, 6),
+                   ord = factor(letters[1:3], ordered = TRUE),
+                   nom2 = factor(LETTERS[c(1,2,2)]),
+                   nom3 = factor(LETTERS[3:5]))
+```
 
-
-## Nearest-neighbor algorithms
-
+```{r dependson="data_def"}
+data
+cluster::daisy(data, metric = "gower")
+((6 - 3) / 5 + (1 / 2) + 0 + 1) / 4 # daisy(data[2:3,])
+```
 
 
 ## From Gower to Manhattan distance
+
+```{r dependson="data_def"}
+(mdata <- mangow::mangow(data))
+cluster::daisy(mdata, metric = "manhattan")
+```
 
 
 
