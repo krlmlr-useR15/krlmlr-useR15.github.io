@@ -296,19 +296,18 @@ $$\log X_i = \log U_i \cdot \frac{1}{w_i} = \frac{-\text{Exp}_i(1)}{w_i} ⩮ \fr
 with "matching" observations from $(X, Z)$
 to create a realization of $(X, Y, Z)$.
 
+$$(x, y) ⋈ (x', z) = (x, y, z)$$
+
 - Precondition: $Y$ and $Z$ independent given $X$
 
 - Variants:
-    - Exact
-    - **Approximate**
-
-
-
-
+    - Exact: $x = x'$
+    - **Approximate**: $x$ similar to $x'$
 
 
 ## Gower distance
 
+Distance metric for interval-scaled, ordered and nominal variables
 
 
 ## Current implementation
