@@ -14,6 +14,10 @@ knitr::opts_chunk$set(cache = TRUE, comment = "")
 knit_print.dissimilarity <- function(x, options) {
   print(structure(x, class = "dist"))
 }
+
+knit_print.function <- function(x, options) {
+  dput(x)
+}
 ```
 
 ## Algorithm engineering
@@ -44,7 +48,7 @@ Generation of input for agent-based microsimulation models
 ## Random sampling
 
 ```{r}
-dput(sample.int)
+sample.int
 ```
 
 - `n`: Number of items to choose from
@@ -252,7 +256,7 @@ Nonuniform probabilities:
 - Reservoir sampling (Efraimidis and Spirakis, 2006)
 
 ```{r}
-dput(wrswoR::sample_int_rank)
+wrswoR::sample_int_rank
 ```
 
 
