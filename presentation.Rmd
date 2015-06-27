@@ -314,7 +314,20 @@ $$(x, y) ⋈ (x', z) = (x, y, z)$$
     - **Approximate**: $x$ similar to $x'$
 
 
-## Gower distance
+## Approximate hot-deck statistical matching
+
+- Input: two samples from $(X, Y)$ and $(X, Z)$
+- Output: a dataset $(X, Y, Z)$
+
+For each $(x, y)$ in $(X, Y)$, randomly select $(x', z)$ from $(X, Z)$
+so that $x$ similar to $x'$
+
+- Similarity measure
+    - Gower's distance
+- Find $(x', z)$ for given $x$
+    - $k$-nearest-neighbors
+
+## Gower's distance
 
 Distance metric for multivariate distributions (Gower, 1971)
 
