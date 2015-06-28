@@ -298,7 +298,7 @@ $$\log X_i = \log U_i \cdot \frac{1}{w_i} = \frac{-\text{Exp}_i(1)}{w_i} ⩮ \fr
 
 
 
-## Statistical matching
+## Statistical matching (data fusion)
 
 - Input: two joint distributions $(X, Y)$ and $(X, Z)$
 - Output: a joint distribution $(X, Y, Z)$
@@ -327,7 +327,7 @@ so that $x$ similar to $x'$
 - Similarity measure
     - Gower's distance
 - Find $(x', z)$ for given $x$
-    - $k$-nearest-neighbors
+    - $k$ nearest neighbors
 
 ## Gower's distance
 
