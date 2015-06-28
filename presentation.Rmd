@@ -443,10 +443,15 @@ Distance between second and third observation
 
 ## Run time improvements
 
-
-
-## Correctness
-
+- Statistical matching with $8 \times 10^6$ recipients
+  vs. $5 \times 10^4$ donors
+    - Naïve approach: 20 hours
+        - Compute all-pairs distances
+    - Transform the problem: 20 minutes
+        - Gower's -> Manhattan
+        - 4 -> 6 columns
+        - Use `RANN.L1` for finding the $k$ nearest donors
+          for each recipient
 
 
 ## Summary
