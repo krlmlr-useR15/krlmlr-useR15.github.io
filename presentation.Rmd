@@ -257,10 +257,15 @@ Nonuniform probabilities:
 
 - Rejection sampling
     - Sample with replacement, throw away duplicates
-- Reservoir sampling (Efraimidis and Spirakis, 2006)
+- One-pass sampling (Efraimidis and Spirakis, 2006)
 
 ```{r}
 wrswoR::sample_int_rank
+```
+
+```r
+n %>% rexp %>% divide_by(prob) %>%
+  sort(index.return = TRUE) %>% use_series(ix) %>% head(size)
 ```
 
 
