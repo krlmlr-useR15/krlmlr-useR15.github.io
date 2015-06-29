@@ -417,12 +417,75 @@ round(m, 4)[c(1,4,7,2,5,8,3,6,9),]
 
 ## Correctness
 
+```{r echo=F}
+sub_correctness <-
+wrswoR.benchmark::correctness %>%
+  filter(r * n == j) %>%
+  tbl_df
+
+STEPS <- sqrt(length(unique(sub_correctness$i)))
+stopifnot(STEPS == trunc(STEPS))
+
+sub_correctness_means <-
+  sub_correctness %>%
+  group_by(prob, j, R) %>%
+  summarize(R.Freq = n() / STEPS) %>%
+  ungroup %>%
+  rename(item = R)
+```
+
+```{r echo=F, message=F}
+ggplot_comp_base <- list(
+  theme_bw(),
+  xlab("Item"),
+  ylab("Count"),
+  scale_color_discrete(name = "Algorithm")
+)
+
+sub_correctness_plots <-
+  sub_correctness %>%
+  tidyr::gather(algo, item, ccrank, crank, rank, rej, expj, expjs, R) %>%
+  group_by(i %% STEPS, algo, j, prob, item) %>%
+  summarize(item.Freq = n()) %>%
+  ungroup %>%
+  left_join(sub_correctness_means) %>%
+  group_by(j, prob) %>%
+  do(plot={
+    ggplot(., aes(x=factor(item), y=item.Freq, color=algo)) +
+      geom_violin() +
+      facet_wrap(~prob+j) +
+      ggplot_comp_base
+  })
+```
+
+```{r echo = FALSE}
+sub_correctness_plots %>%
+  filter(j == 1 & prob == "uniform") %>%
+  extract2("plot") %>%
+  extract2(1)
+```
 
 
-## Summary
+## Correctness
+
+```{r echo = FALSE}
+sub_correctness_plots %>%
+  filter(j == 5 & prob == "linear") %>%
+  extract2("plot") %>%
+  extract2(1)
+```
 
 
+## Correctness
 
+```{r echo = FALSE}
+sub_correctness_plots %>%
+  filter(j == 2 & prob == "rexp") %>%
+  extract2("plot") %>%
+  extract2(1)
+```
+
+##
 
 
 # Similarity-based statistical matching
