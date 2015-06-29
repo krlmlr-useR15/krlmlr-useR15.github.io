@@ -47,6 +47,8 @@ Generation of input for agent-based microsimulation models
 3. Survey calibration
 
 
+# Weighted random sampling without replacement
+
 ## Random sampling
 
 ```{r}
@@ -297,6 +299,10 @@ $$\log X_i = \log U_i \cdot \frac{1}{w_i} = \frac{-\text{Exp}_i(1)}{w_i} ⩮ \fr
 ## Summary
 
 
+
+
+
+# Similarity-based statistical matching
 
 ## Statistical matching (data fusion)
 
