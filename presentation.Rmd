@@ -264,8 +264,7 @@ wrswoR::sample_int_rank
 ```
 
 ```r
-n %>% rexp %>% divide_by(prob) %>%
-  sort(index.return = TRUE) %>% use_series(ix) %>% head(size)
+n %>% rexp %>% divide_by(prob) %>% order %>% head(size)
 ```
 
 
