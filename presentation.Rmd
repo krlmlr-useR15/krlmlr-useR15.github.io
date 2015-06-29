@@ -270,7 +270,7 @@ n %>% rexp %>% divide_by(prob) %>% order %>% head(size)
 ```
 
 
-## Run time: `size = n`, `prob == 1`
+## Run time | `size = n`, `prob = 1`
 
 ```{r echo=FALSE}
 ggplot_perf_base <- list(
@@ -294,7 +294,7 @@ wrswoR.benchmark::timings %>%
 ```
 
 
-## Run time: `size = n`, `prob == 1`
+## Run time | `size = n`, `prob = 1`
 
 ```{r run-time-log, echo=FALSE}
 wrswoR.benchmark::timings %>%
@@ -311,7 +311,7 @@ wrswoR.benchmark::timings %>%
 ```
 
 
-## Run time: `size = n / 10`, `prob == 1`
+## Run time | `size = n / 10`, `prob = 1`
 
 ```{r run-time-10-log, echo=FALSE}
 wrswoR.benchmark::timings %>%
@@ -328,7 +328,7 @@ wrswoR.benchmark::timings %>%
 ```
 
 
-## Run time: `size = n / 100`, `prob == 1`
+## Run time | `size = n / 100`, `prob = 1:n`
 
 ```{r run-time-100-log, echo=FALSE}
 wrswoR.benchmark::timings %>%
@@ -345,7 +345,7 @@ wrswoR.benchmark::timings %>%
 ```
 
 
-## Run time: `size = n / 100`, `prob` linear
+## Run time | `size = n / 100`, `prob = 1:n`
 
 ```{r run-time-100-linear-log, echo=FALSE}
 wrswoR.benchmark::timings %>%
@@ -362,7 +362,7 @@ wrswoR.benchmark::timings %>%
 ```
 
 
-## Run time: `size = n / 10`, `prob` linear
+## Run time | `size = n / 10`, `prob = 1:n`
 
 ```{r run-time-10-linear-log, echo=FALSE}
 wrswoR.benchmark::timings %>%
@@ -379,7 +379,7 @@ wrswoR.benchmark::timings %>%
 ```
 
 
-## Run time: `size = n`, `prob` linear
+## Run time | `size = n`, `prob = 1:n`
 
 ```{r run-time-linear-log, echo=FALSE}
 wrswoR.benchmark::timings %>%
@@ -394,10 +394,6 @@ wrswoR.benchmark::timings %>%
   geom_line() +
   scale_x_log10()
 ```
-
-
-## Run time for different rates
-
 
 
 ## Modelling run time
