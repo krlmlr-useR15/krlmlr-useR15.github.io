@@ -399,7 +399,7 @@ wrswoR.benchmark::timings %>%
 ## Modelling run time
 
 ```r
-lm( log10(time) ~ a.+ a.:log10(n) + a.:r-1 )
+lm( log10(time) ~ a. + a.:log10(n) + a.:r-1 )
 ```
 
 ```{r echo=F}
@@ -411,9 +411,8 @@ m <-
   summary %>% extract2("coefficients") %>% extract(, 1:2)
 
 colnames(m)[1] <- gsub("^  ", "", colnames(m)[1])
-round(m, 4)
+round(m, 4)[c(1,4,7,2,5,8,3,6,9),]
 ```
-
 
 
 ## Correctness
