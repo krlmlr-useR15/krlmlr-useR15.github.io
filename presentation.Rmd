@@ -5,7 +5,9 @@ date: "July 1, 2015"
 output: ioslides_presentation
 ---
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
+library(tidyr)
+library(dplyr)
 library(mangow)
 library(cluster)
 library(magrittr)
@@ -268,15 +270,152 @@ n %>% rexp %>% divide_by(prob) %>% order %>% head(size)
 ```
 
 
-## Run time for different distributions
+## Run time: `size = n`, `prob == 1`
 
+```{r echo=FALSE}
+ggplot_perf_base <- list(
+  theme_bw(),
+  ylab("Run time (s)"),
+  scale_color_discrete(name = "Algorithm")
+)
+```
+
+```{r run-time-sclinear, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 1) %>%
+  filter(prob == "uniform") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time: `size = n`, `prob == 1`
+
+```{r run-time-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 1) %>%
+  filter(prob == "uniform") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time: `size = n / 10`, `prob == 1`
+
+```{r run-time-10-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 0.1) %>%
+  filter(prob == "uniform") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time: `size = n / 100`, `prob == 1`
+
+```{r run-time-100-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 0.01) %>%
+  filter(prob == "uniform") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time: `size = n / 100`, `prob` linear
+
+```{r run-time-100-linear-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 0.01) %>%
+  filter(prob == "shuffled_linear") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time: `size = n / 10`, `prob` linear
+
+```{r run-time-10-linear-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 0.1) %>%
+  filter(prob == "linear") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time: `size = n`, `prob` linear
+
+```{r run-time-linear-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 1) %>%
+  filter(prob == "linear") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
 
 
 ## Run time for different rates
 
 
 
-## Linear model?
+## Modelling run time
+
+```r
+lm(log10(time) ~ a.+ a.:log10(n) + a.:r-1)
+```
+
+```{r echo=F}
+#m <-
+  wrswoR.benchmark::timings %>%
+  rename(`a.`=expr) %>%
+  lm(f = log10(time)~a.+a.:log10(n)+a.:log10(n*r)-1, weights = n^2) %>%
+  summary #%>% extract2("coefficients") %>% extract(, 1:2)
+
+#colnames(m)[1] <- gsub("^  ", "", colnames(m)[1])
+#round(m, 4)
+```
 
 
 
