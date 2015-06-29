@@ -268,22 +268,6 @@ n %>% rexp %>% divide_by(prob) %>% order %>% head(size)
 ```
 
 
-## Reservoir sampling
-
-- $i \in {1, \ldots n}$
-- $w_i > 0$
-- $U_i$ independent uniform random variables
-
-The probability that $X_i = (U_i)^{1 / w_i}$ is ordered in descending order
-(i.e., $X_1 \geq X_2 \geq \ldots \geq X_n$) is equal to the probability
-that the items are drawn in order (first $w_1$, then $w_2$, etc.)
-in a weighted sampling without replacement.
-
-- Use logarithm of $X_i$ for better numerical stability:
-
-$$\log X_i = \log U_i \cdot \frac{1}{w_i} = \frac{-\text{Exp}_i(1)}{w_i} ⩮ \frac{w_i}{\text{Exp}_i(1)}$$
-
-
 ## Run time for different distributions
 
 
