@@ -142,9 +142,12 @@ Common framework:
     - Choose sub-interval covered by point
     - If sampling without replacement, remove sub-interval
 
-```{r echo=FALSE, fig.height=interval_fig_height}
+```{r echo=FALSE}
 yr <- runif(1)
 d$r <- c(0, diff(cumsum(d$y) < yr))
+```
+
+```{r echo=FALSE, fig.height=interval_fig_height}
 ggplot(d, aes(x=0, y=y, group=0)) +
   ggplot_interval +
   geom_bar(position="stack", stat="identity", fill=NA, color="black") +
