@@ -24,14 +24,6 @@ knit_print.function <- function(x, options) {
 }
 ```
 
-## Algorithm engineering
-
-> Design, analysis, implementation, optimization, profiling and experimental evaluation of computer algorithms. (*Wikipedia*)
-
-Here: Substitute existing implementation by an algorithm
-with a lower computational complexity.
-
-
 ## Application
 
 Generating input for agent-based microsimulation models
@@ -126,36 +118,8 @@ ggplot(d, aes(x=0, y=y, group=0)) +
 ```
 
 
-## Random sampling with replacement
-
-- No need to remove sub-interval
-- Uniform probabilities: No need for explicit interval
-
-```{r echo=FALSE, fig.height=interval_fig_height}
-ggplot(d, aes(x=0, y=yy, group=0)) +
-  ggplot_interval +
-  geom_bar(position="stack", stat="identity", fill=NA, color="black") +
-  scale_fill_identity()
-```
-
-- Nonuniform probabilities: Binary search?
-    - Better: Walker's alias method
-    - Used in R if many elements are not entirely unlikely
-
-
 ```{r echo=FALSE, fig.height=interval_fig_height}
 d$f <- seq_along(d$r)
-ggplot(d, aes(x=0, y=y, group=0, fill=f)) +
-  ggplot_interval_rainbow +
-  geom_bar(position="stack", stat="identity", color="black")
-```
-
-```{r echo=FALSE, fig.height=interval_fig_height*2}
-ggplot(d, aes(x=-order(y), y=y, group=f, fill=f)) +
-  ggplot_interval_base +
-  ggplot_rainbow +
-  geom_bar(stat="identity", color="black") +
-  geom_bar(aes(y=yy), position="stack", stat="identity", fill=NA, color="black", linetype=3)
 ```
 
 
