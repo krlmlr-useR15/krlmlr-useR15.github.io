@@ -34,7 +34,7 @@ with a lower computational complexity.
 
 ## Application
 
-Generation of input for agent-based microsimulation models
+Generating input for agent-based microsimulation models
 
 - Input: register data, demographic and mobility surveys
 - *Survey calibration*: Compute weights
