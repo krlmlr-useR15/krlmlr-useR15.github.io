@@ -456,6 +456,10 @@ sub_correctness_plots %>%
 
 ##
 
+```r
+devtools::install_github("krlmlr/wrswoR")
+```
+
 
 # Similarity-based statistical matching
 
@@ -617,6 +621,9 @@ Distance between second and third observation
 
 ##
 
+```r
+devtools::install_github("krlmlr/mangow")
+```
 
 
 # Survey calibration
