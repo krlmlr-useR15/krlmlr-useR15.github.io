@@ -399,7 +399,7 @@ wrswoR.benchmark::timings %>%
 ## Modelling run time
 
 ```r
-lm( log10(time) ~ a. + a.:log10(n) + a.:r-1, weights = n )
+lm(log10(time) ~ a. + a.:log10(n) + a.:log10(size) - 1, weights = n)
 ```
 
 ```{r echo=F}
@@ -407,7 +407,8 @@ m <-
   wrswoR.benchmark::timings %>%
   filter(expr %in% c("crank", "rej", "R")) %>%
   rename(`a.`=expr) %>%
-  lm(f = log10(time)~a.+a.:log10(n)+a.:log10(r)-1, weights = n) %>%
+  mutate(size = r * n) %>%
+  lm(f = log10(time)~a.+a.:log10(n)+a.:log10(size)-1, weights = n) %>%
   summary %>% extract2("coefficients") %>% extract(, 1:2)
 
 colnames(m)[1] <- gsub("^  ", "", colnames(m)[1])
