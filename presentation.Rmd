@@ -105,66 +105,16 @@ ggplot_interval_rainbow <-
   )
 ```
 
-
-
-## Implementation of random sampling
-
-Common framework:
-
-- **Subdivide an interval according to probabilities**
-- Repeat
-    - Uniformly sample point from interval
-    - Choose sub-interval covered by point
-    - If sampling without replacement, remove sub-interval
-
 ```{r echo=FALSE}
 N <- 10
 prob <- prop.table(runif(N))
 d <- data.frame(y=prob, yy=1/N)
 ```
 
-```{r echo=FALSE, fig.height=interval_fig_height}
-ggplot(d, aes(x=0, y=y, group=0)) +
-  ggplot_interval +
-  geom_bar(position="stack", stat="identity", fill=NA, color="black")
-```
-
-
-
-
-## Implementation of random sampling
-
-Common framework:
-
-- Subdivide an interval according to probabilities
-- Repeat
-    - **Uniformly sample point from interval**
-    - Choose sub-interval covered by point
-    - If sampling without replacement, remove sub-interval
-
 ```{r echo=FALSE}
 yr <- runif(1)
 d$r <- c(0, diff(cumsum(d$y) < yr))
 ```
-
-```{r echo=FALSE, fig.height=interval_fig_height}
-ggplot(d, aes(x=0, y=y, group=0)) +
-  ggplot_interval +
-  geom_bar(position="stack", stat="identity", fill=NA, color="black") +
-  geom_point(x=0, y=yr, color = "red")
-```
-
-
-
-## Implementation of random sampling
-
-Common framework:
-
-- Subdivide an interval according to probabilities
-- Repeat
-    - Uniformly sample point from interval
-    - **Choose sub-interval covered by point**
-    - If sampling without replacement, remove sub-interval
 
 ```{r echo=FALSE, fig.height=interval_fig_height}
 ggplot(d, aes(x=0, y=y, group=0)) +
