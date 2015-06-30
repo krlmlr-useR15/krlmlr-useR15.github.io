@@ -652,28 +652,11 @@ Distance between second and third observation
           for each recipient
 
 
-## Summary
+##
 
 
 
-## Survey calibration
+# Survey calibration
 
 
-
-## Straightforward implementation
-
-
-
-## Suggested implementation
-
-
-
-## Performance comparison
-
-
-
-## Summary
-
-
-
-## Conclusion
+##
