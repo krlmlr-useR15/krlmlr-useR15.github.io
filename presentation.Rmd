@@ -579,3 +579,7 @@ devtools::install_github("krlmlr/mangow")
 
 
 ##
+
+```r
+http://krlmlr-user15.github.io/
+```
