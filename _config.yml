@@ -6,7 +6,7 @@ email: kirill.mueller@ivt.baug.ethz.ch
 description: "This website is an entry point for packages and documentation for my submission to useR! 2015."
 baseurl: ""
 url: "http://krlmlr-useR15.github.io"
-date: 2015-07-01 14:16:19 UTC
+date: 2015-07-01 14:17:52 UTC
 
 # Build settings
 markdown: kramdown
