@@ -2,7 +2,9 @@
 title: "Improving computational performance with algorithm engineering"
 author: "Kirill Müller, IVT, ETH Zurich"
 date: "July 1, 2015"
-output: ioslides_presentation
+output:
+  ioslides_presentation:
+    self_contained: false
 ---
 
 ```{r echo=FALSE, message=FALSE}
