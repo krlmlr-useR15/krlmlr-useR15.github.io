@@ -26,14 +26,14 @@ knit_print.function <- function(x, options) {
 }
 ```
 
-## Application
-
-Generating input for agent-based microsimulation models
+## Activity-based microsimulation models
 
 - Input: register data, demographic and mobility surveys
 - *Survey calibration*: Compute weights
 - *Sampling without replacement*: Transform to integer weights
 - *Statistical matching*: Combine datasets
+
+    ![MATSim video](matsim.gif "MATSim video")
 
 
 ## Overview
