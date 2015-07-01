@@ -1,0 +1,585 @@
+---
+title: "Improving computational performance with algorithm engineering"
+author: "Kirill Müller, IVT, ETH Zurich"
+date: "July 1, 2015"
+output:
+  ioslides_presentation:
+    self_contained: false
+---
+
+```{r echo=FALSE, message=FALSE}
+library(tidyr)
+library(dplyr)
+library(mangow)
+library(cluster)
+library(magrittr)
+library(ggplot2)
+set.seed(20150619L)
+knitr::opts_chunk$set(cache = TRUE, comment = "")
+
+knit_print.dissimilarity <- function(x, options) {
+  print(structure(x, class = "dist"))
+}
+
+knit_print.function <- function(x, options) {
+  dput(x)
+}
+```
+
+## Activity-based microsimulation models
+
+- Input: register data, demographic and mobility surveys
+- *Survey calibration*: Compute weights
+- *Sampling without replacement*: Transform to integer weights
+- *Statistical matching*: Combine datasets
+
+    ![MATSim video](matsim.gif "MATSim video")
+
+
+## Overview
+
+1. Weighted random sampling without replacement
+2. Similarity-based statistical matching
+3. Survey calibration
+
+
+# Weighted random sampling without replacement
+
+## Random sampling
+
+```{r}
+sample.int
+```
+
+- `n`: Number of items to choose from
+- `size`: Number of items to choose
+    - optimize for `size` ≫ `1`
+- `replace`: With or without replacement
+- `prob`: Uniform or non-uniform probabilities
+
+
+## Implementation of random sampling
+
+Common framework:
+
+- Subdivide an interval according to probabilities
+- Repeat
+    - Uniformly sample point from interval
+    - Choose sub-interval covered by point
+    - If sampling without replacement, remove sub-interval
+
+```{r echo=F}
+interval_fig_height <- 0.6
+ggplot_interval_base <-
+  list(
+    theme_classic(),
+    theme(text = element_blank(), axis.line = element_blank(),
+          axis.ticks = element_blank()),
+    scale_color_identity(),
+    theme(plot.margin = grid::unit(c(0,0,0,0), "line")),
+    NULL
+  )
+ggplot_interval <-
+  c(
+    ggplot_interval_base,
+    list(
+      coord_flip(),
+      NULL
+    )
+  )
+ggplot_rainbow <-
+  list(
+    scale_fill_gradientn(colours = rainbow(23), guide = FALSE),
+    NULL
+  )
+ggplot_interval_rainbow <-
+  c(
+    ggplot_interval,
+    ggplot_rainbow
+  )
+```
+
+```{r echo=FALSE}
+N <- 10
+prob <- prop.table(runif(N))
+d <- data.frame(y=prob, yy=1/N)
+```
+
+```{r echo=FALSE}
+yr <- runif(1)
+d$r <- c(0, diff(cumsum(d$y) < yr))
+```
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(d, aes(x=0, y=y, group=0)) +
+  ggplot_interval +
+  geom_bar(aes(fill=ifelse(r, "green", NA)), position="stack", stat="identity", color=NA) +
+  geom_bar(position="stack", stat="identity", fill=NA, color="black") +
+  scale_fill_identity() +
+  geom_point(x=0, y=yr, color = "red")
+```
+
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+d$f <- seq_along(d$r)
+```
+
+
+## Implementation of random sampling
+
+Common framework:
+
+- Subdivide an interval according to probabilities
+- Repeat
+    - Uniformly sample point from interval
+    - Choose sub-interval covered by point
+    - **If sampling without replacement, remove sub-interval**
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(d, aes(x=0, y=yy, group=0, fill=ifelse(r, NA, f))) +
+  ggplot_interval +
+  ggplot_rainbow +
+  geom_bar(position="stack", stat="identity", color="black")
+```
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(head(d, -1), aes(x=0, y=yy, group=0, fill=ifelse(r, tail(d$f, 1), f))) +
+  ggplot_interval +
+  ggplot_rainbow +
+  scale_y_continuous(limits = c(0,1)) +
+  geom_bar(position="stack", stat="identity", color="black")
+```
+
+
+## Random sampling w/o replacement | Non-uniform probabilities
+
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(d, aes(x=0, y=y, group=0, fill=ifelse(r, NA, f))) +
+  ggplot_interval_rainbow +
+  geom_bar(position="stack", stat="identity", color="black")
+```
+
+
+```{r echo=FALSE, fig.height=interval_fig_height}
+ggplot(d[!d$r,], aes(x=0, y=y, group=0, fill=f)) +
+  ggplot_interval_rainbow +
+  geom_bar(position="stack", stat="identity", color="black")
+```
+
+
+- R uses trivial algorithm with update in $O(n)$
+- Heap-like data structure (Partial Sum Trees) with update in $O(\log n)$ (Wong and Easton, 1980)
+- **Alternative approaches**
+
+
+## Alternative approaches
+
+- Rejection sampling
+    - Sample with replacement, throw away duplicates
+- One-pass sampling (Efraimidis and Spirakis, 2006)
+
+```{r}
+wrswoR::sample_int_rank
+```
+
+```r
+n %>% rexp %>% divide_by(prob) %>% order %>% head(size)
+```
+
+
+## Run time | `size = n`, `prob = 1`
+
+```{r echo=FALSE}
+ggplot_perf_base <- list(
+  theme_bw(),
+  ylab("Run time (s)"),
+  scale_color_discrete(name = "Algorithm")
+)
+```
+
+```{r run-time-sclinear, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 1) %>%
+  filter(prob == "uniform") %>%
+  filter(expr != "ccrank") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time | `size = n`, `prob = 1`
+
+```{r run-time-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 1) %>%
+  filter(prob == "uniform") %>%
+  filter(expr != "ccrank") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time | `size = n / 10`, `prob = 1`
+
+```{r run-time-10-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 0.1) %>%
+  filter(prob == "uniform") %>%
+  filter(expr != "ccrank") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time | `size = n / 100`, `prob = 1:n`
+
+```{r run-time-100-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 0.01) %>%
+  filter(prob == "uniform") %>%
+  filter(expr != "ccrank") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time | `size = n / 100`, `prob = 1:n`
+
+```{r run-time-100-linear-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 0.01) %>%
+  filter(prob == "shuffled_linear") %>%
+  filter(expr != "ccrank") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time | `size = n / 10`, `prob = 1:n`
+
+```{r run-time-10-linear-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 0.1) %>%
+  filter(prob == "linear") %>%
+  filter(expr != "ccrank") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Run time | `size = n`, `prob = 1:n`
+
+```{r run-time-linear-log, echo=FALSE}
+wrswoR.benchmark::timings %>%
+  filter(r == 1) %>%
+  filter(prob == "linear") %>%
+  filter(expr != "ccrank") %>%
+  group_by(n, expr) %>%
+  summarize(median = median(time)) %>%
+  ungroup %>%
+  ggplot(aes(x=n, y=median * 1e-9, color=expr)) +
+  scale_y_log10() +
+  ggplot_perf_base +
+  geom_line() +
+  scale_x_log10()
+```
+
+
+## Modelling run time
+
+```r
+lm(log10(time) ~ a. + a.:log10(n) + a.:log10(size) - 1, weights = n)
+```
+
+```{r echo=F}
+m <-
+  wrswoR.benchmark::timings %>%
+  filter(expr %in% c("crank", "rej", "R")) %>%
+  rename(`a.`=expr) %>%
+  mutate(size = r * n) %>%
+  lm(f = log10(time)~a.+a.:log10(n)+a.:log10(size)-1, weights = n) %>%
+  summary %>% extract2("coefficients") %>% extract(, 1:2)
+
+colnames(m)[1] <- gsub("^  ", "", colnames(m)[1])
+round(m, 4)[c(1,4,7,2,5,8,3,6,9),]
+```
+
+```{r}
+10 ^ 0.02
+```
+
+
+
+## Correctness
+
+```{r echo=F}
+sub_correctness <-
+wrswoR.benchmark::correctness %>%
+  filter(r * n == j) %>%
+  tbl_df
+
+STEPS <- sqrt(length(unique(sub_correctness$i)))
+stopifnot(STEPS == trunc(STEPS))
+
+sub_correctness_means <-
+  sub_correctness %>%
+  group_by(prob, j, R) %>%
+  summarize(R.Freq = n() / STEPS) %>%
+  ungroup %>%
+  rename(item = R)
+```
+
+```{r echo=F, message=F}
+ggplot_comp_base <- list(
+  theme_bw(),
+  xlab("Item"),
+  ylab("Count"),
+  scale_color_discrete(name = "Algorithm")
+)
+
+sub_correctness_plots <-
+  sub_correctness %>%
+  tidyr::gather(algo, item, ccrank, crank, rank, rej, expj, expjs, R) %>%
+  group_by(i %% STEPS, algo, j, prob, item) %>%
+  summarize(item.Freq = n()) %>%
+  ungroup %>%
+  left_join(sub_correctness_means) %>%
+  group_by(j, prob) %>%
+  do(plot={
+    ggplot(., aes(x=factor(item), y=item.Freq, color=algo)) +
+      geom_violin() +
+      facet_wrap(~prob+j) +
+      ggplot_comp_base
+  })
+```
+
+```{r echo = FALSE}
+sub_correctness_plots %>%
+  filter(j == 1 & prob == "uniform") %>%
+  extract2("plot") %>%
+  extract2(1)
+```
+
+
+## Correctness
+
+```{r echo = FALSE}
+sub_correctness_plots %>%
+  filter(j == 5 & prob == "linear") %>%
+  extract2("plot") %>%
+  extract2(1)
+```
+
+
+## Correctness
+
+```{r echo = FALSE}
+sub_correctness_plots %>%
+  filter(j == 2 & prob == "rexp") %>%
+  extract2("plot") %>%
+  extract2(1)
+```
+
+##
+
+```r
+devtools::install_github("krlmlr/wrswoR")
+```
+
+
+# Similarity-based statistical matching
+
+## Statistical matching (data fusion)
+
+- Input: two joint distributions $(X, Y)$ and $(X, Z)$
+- Output: a joint distribution $(X, Y, Z)$
+
+**Hot deck**: Combine observations from $(X, Y)$ 
+with "matching" observations from $(X, Z)$
+to create a realization of $(X, Y, Z)$.
+
+$$(x, y) ⋈ (x', z) = (x, y, z)$$
+
+- Precondition: $Y$ and $Z$ independent given $X$
+
+- Variants:
+    - Exact: $x' = x$
+    - **Approximate**: $x'$ similar to $x$
+
+
+## Gower's distance
+
+Distance metric for multivariate distributions (Gower, 1971)
+
+Weighted sum of distances for each variable, in $[0, 1]$
+
+- Interval-scaled: Relative to interval width
+- Ordinal variables: Relative to number of levels
+- Nominal variables: 0 if equal, 1 otherwise
+
+```{r data_def, echo=F}
+data_int <- data.frame(int=c(1, 3, 6))
+data_ord <- data.frame(ord = factor(letters[1:3], ordered = TRUE))
+data_nm2 <- data.frame(nm2 = factor(LETTERS[c(1,2,2)]))
+data_nm3 <- data.frame(nm3 = factor(LETTERS[3:5]))
+```
+
+```{r data_cbind_def, dependson="data_def"}
+(data <- cbind(data_int, data_ord, data_nm2, data_nm3))
+```
+
+
+## From Gower's to Manhattan distance
+
+<div class="columns-2">
+```{r dependson="data_def"}
+data_int
+daisy(data_int, "gower")
+(6 - 3) / 5
+```
+
+```{r dependson="data_def"}
+(mdata_int <- mangow(data_int))
+daisy(mdata_int, "manhattan")
+```
+
+Distance between second and third observation
+</div>
+
+
+## From Gower's to Manhattan distance
+
+<div class="columns-2">
+```{r dependson="data_def"}
+data_ord
+daisy(data_ord, "gower")
+(3 - 2) / 2
+```
+
+```{r dependson="data_def"}
+(mdata_ord <- mangow(data_ord))
+daisy(mdata_ord, "manhattan")
+```
+
+Distance between second and third observation
+</div>
+
+
+## From Gower's to Manhattan distance
+
+<div class="columns-2">
+```{r dependson="data_def"}
+data_nm2
+daisy(data_nm2, "gower")
+ifelse("B" == "B", 0, 1)
+```
+
+```{r dependson="data_def"}
+(mdata_nm2 <- mangow(data_nm2))
+daisy(mdata_nm2, "manhattan")
+```
+
+Distance between second and third observation
+</div>
+
+
+## From Gower's to Manhattan distance
+
+<div class="columns-2">
+```{r dependson="data_def"}
+data_nm3
+daisy(data_nm3, "gower")
+ifelse("D" == "E", 0, 1)
+```
+
+```{r dependson="data_def"}
+(mdata_nm3 <- mangow(data_nm3))
+daisy(mdata_nm3, "manhattan")
+```
+
+Distance between second and third observation
+</div>
+
+
+## From Gower's to Manhattan distance
+
+<div class="columns-2">
+```{r dependson="data_cbind_def"}
+data
+daisy(data, "gower")
+(0.6 + 0.5 + 0 + 1) / 4
+```
+
+```{r dependson="data_cbind_def"}
+(mdata <- mangow(data))
+daisy(mdata, "manhattan")
+```
+
+Distance between second and third observation
+</div>
+
+
+## Run time improvements
+
+- Statistical matching with $8 \times 10^6$ recipients
+  vs. $5 \times 10^4$ donors
+    - Naïve approach: 20 hours
+        - Compute all-pairs distances
+    - Transform the problem: 20 minutes
+        - Gower's -> Manhattan
+        - 4 -> 6 columns
+        - Use `RANN.L1` for finding the $k$ nearest donors
+          for each recipient
+
+
+##
+
+```r
+devtools::install_github("krlmlr/mangow")
+```
+
+
+# Survey calibration
+
+
+##
+
+```r
+http://krlmlr-user15.github.io/
+```
