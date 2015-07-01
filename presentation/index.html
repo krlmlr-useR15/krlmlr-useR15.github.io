@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Improving computational performance with algorithm engineering</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="generator" content="pandoc" />
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" media="all" href="presentation_files/ioslides-13.5.1/fonts/fonts.css">
+
+  <link rel="stylesheet" media="all" href="presentation_files/ioslides-13.5.1/theme/css/default.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="presentation_files/ioslides-13.5.1/theme/css/phone.css">
+
+  <base target="_blank">
+
+  <script type="text/javascript">
+    var SLIDE_CONFIG = {
+      // Slide settings
+      settings: {
+                title: 'Improving computational performance with algorithm engineering',
+                        useBuilds: true,
+        usePrettify: true,
+        enableSlideAreas: true,
+        enableTouch: true,
+              },
+
+      // Author information
+      presenters: [
+            {
+        name:  'Kirill Müller, IVT, ETH Zurich' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
+            ]
+    };
+  </script>
+
+  <style type="text/css">
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    slides > slide {
+      -webkit-transition: all 0.4s ease-in-out;
+      -moz-transition: all 0.4s ease-in-out;
+      -o-transition: all 0.4s ease-in-out;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .auto-fadein {
+      -webkit-transition: opacity 0.6s ease-in;
+      -webkit-transition-delay: 0.4s;
+      -moz-transition: opacity 0.6s ease-in 0.4s;
+      -o-transition: opacity 0.6s ease-in 0.4s;
+      transition: opacity 0.6s ease-in 0.4s;
+      opacity: 0;
+    }
+
+  </style>
+
+
+
+</head>
+
+<body style="opacity: 0">
+
+<slides>
+
+  <slide class="title-slide segue nobackground">
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+            <p style="margin-top: 6px; margin-left: -2px;">July 1, 2015</p>
+          </hgroup>
+  </slide>
+
+<slide class=''><hgroup><h2>Activity-based microsimulation models</h2></hgroup><article  id="activity-based-microsimulation-models">
+
+<ul>
+<li>Input: register data, demographic and mobility surveys</li>
+<li><em>Survey calibration</em>: Compute weights</li>
+<li><em>Sampling without replacement</em>: Transform to integer weights</li>
+<li><p><em>Statistical matching</em>: Combine datasets</p>
+
+<img src='matsim.gif' title='MATSim video'/></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Overview</h2></hgroup><article  id="overview">
+
+<ol>
+<li>Weighted random sampling without replacement</li>
+<li>Similarity-based statistical matching</li>
+<li>Survey calibration</li>
+</ol>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Weighted random sampling without replacement</h2></hgroup><article  id="weighted-random-sampling-without-replacement">
+
+</article></slide><slide class=''><hgroup><h2>Random sampling</h2></hgroup><article  id="random-sampling">
+
+<pre class = 'prettyprint lang-r'>sample.int</pre>
+
+<pre >function (n, size = n, replace = FALSE, prob = NULL) 
+{
+    if (!replace &amp;&amp; is.null(prob) &amp;&amp; n &gt; 1e+07 &amp;&amp; size &lt;= n/2) 
+        .Internal(sample2(n, size))
+    else .Internal(sample(n, size, replace, prob))
+}</pre>
+
+<ul>
+<li><code>n</code>: Number of items to choose from</li>
+<li><code>size</code>: Number of items to choose
+
+<ul>
+<li>optimize for <code>size</code> ≫ <code>1</code></li>
+</ul></li>
+<li><code>replace</code>: With or without replacement</li>
+<li><code>prob</code>: Uniform or non-uniform probabilities</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Implementation of random sampling</h2></hgroup><article  id="implementation-of-random-sampling">
+
+<p>Common framework:</p>
+
+<ul>
+<li>Subdivide an interval according to probabilities</li>
+<li>Repeat
+
+<ul>
+<li>Uniformly sample point from interval</li>
+<li>Choose sub-interval covered by point</li>
+<li>If sampling without replacement, remove sub-interval</li>
+</ul></li>
+</ul>
+
+<p><img src="presentation_files/figure-html/unnamed-chunk-6-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Implementation of random sampling</h2></hgroup><article  id="implementation-of-random-sampling-1">
+
+<p>Common framework:</p>
+
+<ul>
+<li>Subdivide an interval according to probabilities</li>
+<li>Repeat
+
+<ul>
+<li>Uniformly sample point from interval</li>
+<li>Choose sub-interval covered by point</li>
+<li><strong>If sampling without replacement, remove sub-interval</strong></li>
+</ul></li>
+</ul>
+
+<p><img src="presentation_files/figure-html/unnamed-chunk-8-1.png" title="" alt="" width="720" /></p>
+
+<p><img src="presentation_files/figure-html/unnamed-chunk-9-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Random sampling w/o replacement </h2><h3> Non-uniform probabilities</h3></hgroup><article  id="random-sampling-wo-replacement-non-uniform-probabilities">
+
+<p><img src="presentation_files/figure-html/unnamed-chunk-10-1.png" title="" alt="" width="720" /></p>
+
+<p><img src="presentation_files/figure-html/unnamed-chunk-11-1.png" title="" alt="" width="720" /></p>
+
+<ul>
+<li>R uses trivial algorithm with update in \(O(n)\)</li>
+<li>Heap-like data structure (Partial Sum Trees) with update in \(O(\log n)\) (Wong and Easton, 1980)</li>
+<li><strong>Alternative approaches</strong></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Alternative approaches</h2></hgroup><article  id="alternative-approaches">
+
+<ul>
+<li>Rejection sampling
+
+<ul>
+<li>Sample with replacement, throw away duplicates</li>
+</ul></li>
+<li>One-pass sampling (Efraimidis and Spirakis, 2006)</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>wrswoR::sample_int_rank</pre>
+
+<pre >function (n, size, prob) 
+{
+    .check_args(n, size, prob)
+    head(order(rexp(n)/prob), size)
+}</pre>
+
+<pre class = 'prettyprint lang-r'>n %&gt;% rexp %&gt;% divide_by(prob) %&gt;% order %&gt;% head(size)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Run time </h2><h3> <code>size = n</code>, <code>prob = 1</code></h3></hgroup><article  id="run-time-size-n-prob-1">
+
+<p><img src="presentation_files/figure-html/run-time-sclinear-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Run time </h2><h3> <code>size = n</code>, <code>prob = 1</code></h3></hgroup><article  id="run-time-size-n-prob-1-1">
+
+<p><img src="presentation_files/figure-html/run-time-log-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Run time </h2><h3> <code>size = n / 10</code>, <code>prob = 1</code></h3></hgroup><article  id="run-time-size-n-10-prob-1">
+
+<p><img src="presentation_files/figure-html/run-time-10-log-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Run time </h2><h3> <code>size = n / 100</code>, <code>prob = 1:n</code></h3></hgroup><article  id="run-time-size-n-100-prob-1n">
+
+<p><img src="presentation_files/figure-html/run-time-100-log-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Run time </h2><h3> <code>size = n / 100</code>, <code>prob = 1:n</code></h3></hgroup><article  id="run-time-size-n-100-prob-1n-1">
+
+<p><img src="presentation_files/figure-html/run-time-100-linear-log-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Run time </h2><h3> <code>size = n / 10</code>, <code>prob = 1:n</code></h3></hgroup><article  id="run-time-size-n-10-prob-1n">
+
+<p><img src="presentation_files/figure-html/run-time-10-linear-log-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Run time </h2><h3> <code>size = n</code>, <code>prob = 1:n</code></h3></hgroup><article  id="run-time-size-n-prob-1n">
+
+<p><img src="presentation_files/figure-html/run-time-linear-log-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Modelling run time</h2></hgroup><article  id="modelling-run-time">
+
+<pre class = 'prettyprint lang-r'>lm(log10(time) ~ a. + a.:log10(n) + a.:log10(size) - 1, weights = n)</pre>
+
+<pre >                    Estimate Std. Error
+a.crank               1.8789     0.0186
+a.crank:log10(n)      0.7809     0.0043
+a.crank:log10(size)   0.3106     0.0019
+a.rej                 3.1159     0.0186
+a.rej:log10(n)        0.4327     0.0043
+a.rej:log10(size)     0.4296     0.0019
+a.R                   0.2789     0.0186
+a.R:log10(n)          1.0722     0.0043
+a.R:log10(size)       0.8159     0.0019</pre>
+
+<pre class = 'prettyprint lang-r'>10 ^ 0.02</pre>
+
+<pre >[1] 1.047129</pre>
+
+</article></slide><slide class=''><hgroup><h2>Correctness</h2></hgroup><article  id="correctness">
+
+<p><img src="presentation_files/figure-html/unnamed-chunk-18-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Correctness</h2></hgroup><article  id="correctness-1">
+
+<p><img src="presentation_files/figure-html/unnamed-chunk-19-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2>Correctness</h2></hgroup><article  id="correctness-2">
+
+<p><img src="presentation_files/figure-html/unnamed-chunk-20-1.png" title="" alt="" width="720" /></p>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article  id="section">
+
+<pre class = 'prettyprint lang-r'>devtools::install_github(&quot;krlmlr/wrswoR&quot;)</pre>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Similarity-based statistical matching</h2></hgroup><article  id="similarity-based-statistical-matching">
+
+</article></slide><slide class=''><hgroup><h2>Statistical matching (data fusion)</h2></hgroup><article  id="statistical-matching-data-fusion">
+
+<ul>
+<li>Input: two joint distributions \((X, Y)\) and \((X, Z)\)</li>
+<li>Output: a joint distribution \((X, Y, Z)\)</li>
+</ul>
+
+<p><strong>Hot deck</strong>: Combine observations from \((X, Y)\) with &quot;matching&quot; observations from \((X, Z)\) to create a realization of \((X, Y, Z)\).</p>
+
+<p>\[(x, y) ⋈ (x&#39;, z) = (x, y, z)\]</p>
+
+<ul>
+<li><p>Precondition: \(Y\) and \(Z\) independent given \(X\)</p></li>
+<li>Variants:
+
+<ul>
+<li>Exact: \(x&#39; = x\)</li>
+<li><strong>Approximate</strong>: \(x&#39;\) similar to \(x\)</li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Gower&#39;s distance</h2></hgroup><article  id="gowers-distance">
+
+<p>Distance metric for multivariate distributions (Gower, 1971)</p>
+
+<p>Weighted sum of distances for each variable, in \([0, 1]\)</p>
+
+<ul>
+<li>Interval-scaled: Relative to interval width</li>
+<li>Ordinal variables: Relative to number of levels</li>
+<li>Nominal variables: 0 if equal, 1 otherwise</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>(data &lt;- cbind(data_int, data_ord, data_nm2, data_nm3))</pre>
+
+<pre >  int ord nm2 nm3
+1   1   a   A   C
+2   3   b   B   D
+3   6   c   B   E</pre>
+
+</article></slide><slide class=''><hgroup><h2>From Gower&#39;s to Manhattan distance</h2></hgroup><article  id="from-gowers-to-manhattan-distance">
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>data_int</pre>
+
+<pre >  int
+1   1
+2   3
+3   6</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(data_int, &quot;gower&quot;)</pre>
+
+<pre >    1   2
+2 0.4    
+3 1.0 0.6</pre>
+
+<pre class = 'prettyprint lang-r'>(6 - 3) / 5</pre>
+
+<pre >[1] 0.6</pre>
+
+<pre class = 'prettyprint lang-r'>(mdata_int &lt;- mangow(data_int))</pre>
+
+<pre >     int
+[1,] 0.0
+[2,] 0.4
+[3,] 1.0</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(mdata_int, &quot;manhattan&quot;)</pre>
+
+<pre >    1   2
+2 0.4    
+3 1.0 0.6</pre>
+
+Distance between second and third observation</div>
+
+</article></slide><slide class=''><hgroup><h2>From Gower&#39;s to Manhattan distance</h2></hgroup><article  id="from-gowers-to-manhattan-distance-1">
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>data_ord</pre>
+
+<pre >  ord
+1   a
+2   b
+3   c</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(data_ord, &quot;gower&quot;)</pre>
+
+<pre >    1   2
+2 0.5    
+3 1.0 0.5</pre>
+
+<pre class = 'prettyprint lang-r'>(3 - 2) / 2</pre>
+
+<pre >[1] 0.5</pre>
+
+<pre class = 'prettyprint lang-r'>(mdata_ord &lt;- mangow(data_ord))</pre>
+
+<pre >     ord
+[1,] 0.0
+[2,] 0.5
+[3,] 1.0</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(mdata_ord, &quot;manhattan&quot;)</pre>
+
+<pre >    1   2
+2 0.5    
+3 1.0 0.5</pre>
+
+Distance between second and third observation</div>
+
+</article></slide><slide class=''><hgroup><h2>From Gower&#39;s to Manhattan distance</h2></hgroup><article  id="from-gowers-to-manhattan-distance-2">
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>data_nm2</pre>
+
+<pre >  nm2
+1   A
+2   B
+3   B</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(data_nm2, &quot;gower&quot;)</pre>
+
+<pre >  1 2
+2 1  
+3 1 0</pre>
+
+<pre class = 'prettyprint lang-r'>ifelse(&quot;B&quot; == &quot;B&quot;, 0, 1)</pre>
+
+<pre >[1] 0</pre>
+
+<pre class = 'prettyprint lang-r'>(mdata_nm2 &lt;- mangow(data_nm2))</pre>
+
+<pre >     nm2.A.B
+[1,]     0.5
+[2,]    -0.5
+[3,]    -0.5</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(mdata_nm2, &quot;manhattan&quot;)</pre>
+
+<pre >  1 2
+2 1  
+3 1 0</pre>
+
+Distance between second and third observation</div>
+
+</article></slide><slide class=''><hgroup><h2>From Gower&#39;s to Manhattan distance</h2></hgroup><article  id="from-gowers-to-manhattan-distance-3">
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>data_nm3</pre>
+
+<pre >  nm3
+1   C
+2   D
+3   E</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(data_nm3, &quot;gower&quot;)</pre>
+
+<pre >  1 2
+2 1  
+3 1 1</pre>
+
+<pre class = 'prettyprint lang-r'>ifelse(&quot;D&quot; == &quot;E&quot;, 0, 1)</pre>
+
+<pre >[1] 1</pre>
+
+<pre class = 'prettyprint lang-r'>(mdata_nm3 &lt;- mangow(data_nm3))</pre>
+
+<pre >     nm3.C.D nm3.E
+[1,]     0.5   0.0
+[2,]    -0.5   0.0
+[3,]     0.0   0.5</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(mdata_nm3, &quot;manhattan&quot;)</pre>
+
+<pre >  1 2
+2 1  
+3 1 1</pre>
+
+Distance between second and third observation</div>
+
+</article></slide><slide class=''><hgroup><h2>From Gower&#39;s to Manhattan distance</h2></hgroup><article  id="from-gowers-to-manhattan-distance-4">
+
+<div class="columns-2">
+<pre class = 'prettyprint lang-r'>data</pre>
+
+<pre >  int ord nm2 nm3
+1   1   a   A   C
+2   3   b   B   D
+3   6   c   B   E</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(data, &quot;gower&quot;)</pre>
+
+<pre >      1     2
+2 0.725      
+3 1.000 0.525</pre>
+
+<pre class = 'prettyprint lang-r'>(0.6 + 0.5 + 0 + 1) / 4</pre>
+
+<pre >[1] 0.525</pre>
+
+<pre class = 'prettyprint lang-r'>(mdata &lt;- mangow(data))</pre>
+
+<pre >      int   ord nm2.A.B nm3.C.D nm3.E
+[1,] 0.00 0.000   0.125   0.125 0.000
+[2,] 0.10 0.125  -0.125  -0.125 0.000
+[3,] 0.25 0.250  -0.125   0.000 0.125</pre>
+
+<pre class = 'prettyprint lang-r'>daisy(mdata, &quot;manhattan&quot;)</pre>
+
+<pre >      1     2
+2 0.725      
+3 1.000 0.525</pre>
+
+Distance between second and third observation</div>
+
+</article></slide><slide class=''><hgroup><h2>Run time improvements</h2></hgroup><article  id="run-time-improvements">
+
+<ul>
+<li>Statistical matching with \(8 \times 10^6\) recipients vs. \(5 \times 10^4\) donors
+
+<ul>
+<li>Naïve approach: 20 hours
+
+<ul>
+<li>Compute all-pairs distances</li>
+</ul></li>
+<li>Transform the problem: 20 minutes
+
+<ul>
+<li>Gower&#39;s -&gt; Manhattan</li>
+<li>4 -&gt; 6 columns</li>
+<li>Use <code>RANN.L1</code> for finding the \(k\) nearest donors for each recipient</li>
+</ul></li>
+</ul></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article  id="section-1">
+
+<pre class = 'prettyprint lang-r'>devtools::install_github(&quot;krlmlr/mangow&quot;)</pre>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Survey calibration</h2></hgroup><article  id="survey-calibration">
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article  id="section-2">
+
+<pre class = 'prettyprint lang-r'>http://krlmlr-user15.github.io/</pre></article></slide>
+
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<script src="presentation_files/ioslides-13.5.1/js/modernizr.custom.45394.js"></script>
+<script src="presentation_files/ioslides-13.5.1/js/prettify/prettify.js"></script>
+<script src="presentation_files/ioslides-13.5.1/js/prettify/lang-r.js"></script>
+<script src="presentation_files/ioslides-13.5.1/js/prettify/lang-yaml.js"></script>
+<script src="presentation_files/ioslides-13.5.1/js/hammer.js"></script>
+<script src="presentation_files/ioslides-13.5.1/js/slide-controller.js"></script>
+<script src="presentation_files/ioslides-13.5.1/js/slide-deck.js"></script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!-- map slide visiblity events into shiny -->
+<script>
+  (function() {
+    if (window.jQuery) {
+       window.jQuery(document).on('slideleave', function(e) {
+         window.jQuery(e.target).trigger('hidden');
+      });
+       window.jQuery(document).on('slideenter', function(e) {
+         window.jQuery(e.target).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
