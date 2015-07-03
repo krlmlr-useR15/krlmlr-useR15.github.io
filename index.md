@@ -10,13 +10,13 @@ layout: page
 
 Windows users need [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for some of the packages.
 
-- Weighted random sampling without replacement
+- Weighted random sampling without replacement: [`wrswoR`](https://github.com/krlmlr/wrswoR)
 
     ```
     devtools::install_github("krlmlr/wrswoR")
     ```
 
-- Similarity-based statistical matching
+- Similarity-based statistical matching: [`mangow`](https://github.com/krlmlr/mangow)
 
     ```
     devtools::install_github(c("krlmlr/RANN1", "krlmlr/mangow"))
