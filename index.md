@@ -2,7 +2,9 @@
 layout: page
 ---
 
-## [Presentation](presentation/)
+# Improving computational performance with algorithm engineering
+
+## [Presentation](presentation/) ([source](https://github.com/krlmlr-useR15/krlmlr-useR15.github.io/tree/master/_presentation))
 
 ## R packages
 
