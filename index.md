@@ -21,3 +21,15 @@ Windows users need [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for s
     ```
     devtools::install_github(c("krlmlr/RANN1", "krlmlr/mangow"))
     ```
+
+## Package webs: Reproducible research from raw data
+
+### [Poster](poster/rpkgweb.pdf)
+
+Needs `make`.
+
+- Companion package: [`rpkgweb`](https://github.com/krlmlr/rpkgweb)
+
+    ```
+    devtools::install_github(c("krlmlr/MakefileR", "krlmlr/wrswoR"))
+    ```
