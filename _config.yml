@@ -1,12 +1,12 @@
 # Site settings
-title: Improving computational performance with algorithm engineering
+title: Contributions to useR! 2015
 author: Kirill Müller
 username: krlmlr
 email: kirill.mueller@ivt.baug.ethz.ch
 description: "This website is an entry point for packages and documentation for my submission to useR! 2015."
 baseurl: ""
 url: "http://krlmlr-useR15.github.io"
-date: 2015-07-01 14:18:02 UTC
+date: 2015-07-03 08:46:47 UTC
 
 # Build settings
 markdown: kramdown
