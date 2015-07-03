@@ -26,7 +26,7 @@ Windows users need [Rtools](http://cran.r-project.org/bin/windows/Rtools/) for s
 
 ### [Poster](poster/rpkgweb.pdf)
 
-Needs `make`.
+Needs [`make`](https://www.gnu.org/software/make/).
 
 - Companion package: [`rpkgweb`](https://github.com/krlmlr/rpkgweb)
 
